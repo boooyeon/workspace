@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <title>Realtime communication with WebRTC</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+
+  <link rel="stylesheet" href="/css/main.css" />
+
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+  <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+  <script src=”https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js”></script> 
+  <script>
+    window.onload = function () {
+      // 변수를 선언합니다.
+      var socket = io.connect();
+      // 소켓 이벤트를 연결합니다.
+      socket.emit('join', room);
+      
+      socket.on('msg', function (data) {
+      
+        // $('<p>' + data.message + '</p>').appendTo('body');
+        var output = '';
+        output += '<li>';
+        output += '    <h3>' + data.name + '</h3>';
+        output += '    <p>' + data.message + '</p>';
+        output += '    <p>' + data.date + '</p>';
+        output += '</li>';
+
+        // 객체 추가
+        $(output).prependTo('#content');
+        $('#content').listview('refresh');
+      });
+
+
+      $('#button').click(function () {
+        console.log("sssssssssssssssssss")
+        socket.emit('msg', {
+          name: $('#name').val(),
+          message: $('#message').val(),
+          date: new Date().toUTCString()
+        });
+        console.log('!!')
+      });
+
+    };
+  </script>
+
+</head>
+
+<body>
+
+ 
+
+  <div data-role="page">
+    <div data-role="header">
+     <h1>YOUNIVERSE</h1>
+    </div>
+    <div data-role="content">
+      <div>
+        <h3>Nick Name</h3>
+        <input id="name" />
+        <a data-role="button" href="#chatpage">Start Chat</a>
+      </div>
+    </div>
+  </div>  
+
+  
+  <div data-role="page" id="chatpage">
+  <div data-role="header">
+     <h1>YOUNIVERSE</h1>
+  </div>
+  <div data-role="content">
+    <div id="videos">
+      <video id="localVideo" autoplay muted playsinline></video>
+      <video id="remoteVideo" autoplay playsinline></video>
+    </div>
+      <!-- 메세지 입력 -->
+    <input id="message" />
+    <button id='button'>Button</button>
+      <!-- 사진 업로드 -->
+    <form id="uploadForm" method="post" enctype="multipart/form-data">
+      <input type="file" name="test" id="test"/>
+      <button type="button" id="uploadBtn">Save</button>
+    </form>
+      <!-- 전송한 내용이 출력될 위치 -->
+    <ul id="content" data-role="listview" data-inset="true"></ul>
+  </div>
+
+
+  
+  <!-- This file is automatically added/served when running "node index.js". -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+  <script src="js/main.js"></script>
+ </div>
+</body>
+
+</html>
